@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Activity Detail – DailyPulse</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sun: #FFD166;
+      --sky: #E8F4FD;
+      --mint: #06D6A0;
+      --coral: #EF476F;
+      --blue: #118AB2;
+      --purple: #7C3AED;
+      --ink: #1A1A2E;
+      --slate: #4A5568;
+      --muted: #718096;
+      --cloud: #F7FAFC;
+      --border: #E2E8F0;
+      --card: #FFFFFF;
+      --radius: 16px;
+      --shadow: 0 4px 24px rgba(26,26,46,0.07);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--sky);
+      min-height: 100vh;
+      background-image: radial-gradient(circle at 70% 20%, #FFD16620 0%, transparent 40%),
+                        radial-gradient(circle at 20% 80%, #06D6A015 0%, transparent 40%);
+    }
+
+    nav {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(26,26,46,0.05);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--sun);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .nav-brand span {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      color: var(--ink);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-links a {
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      color: var(--slate);
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .nav-links a:hover { background: var(--sky); color: var(--ink); }
+    .nav-links a.active { background: var(--ink); color: #fff; }
+    .nav-links a.logout { color: var(--coral); }
+    .nav-links a.logout:hover { background: #FFF3F5; }
+
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 36px 24px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      transition: color 0.15s;
+    }
+
+    .back-link:hover { color: var(--ink); }
+
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .page-header h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 30px;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+    }
+
+    .date-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--sun);
+      color: var(--ink);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* SCORES */
+    .scores-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .score-card {
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+    }
+
+    .score-card.stress {
+      background: linear-gradient(135deg, #FFF3F5, #FFE4EA);
+      border: 1px solid #FECDD3;
+    }
+
+    .score-card.productivity {
+      background: linear-gradient(135deg, #F0FDF9, #D1FAF0);
+      border: 1px solid #A7F3D0;
+    }
+
+    .score-card .emoji { font-size: 24px; margin-bottom: 8px; }
+
+    .score-card .score-val {
+      font-family: 'DM Serif Display', serif;
+      font-size: 42px;
+      line-height: 1;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .score-card .score-lbl {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .score-card.stress .score-lbl { color: var(--coral); }
+    .score-card.productivity .score-lbl { color: var(--mint); }
+
+    /* DETAIL CARD */
+    .detail-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .detail-card-header {
+      padding: 18px 24px;
+      background: var(--cloud);
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+    }
+
+    .metrics-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .metrics-table tr {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .metrics-table tr:last-child {
+      border-bottom: none;
+    }
+
+    .metrics-table td {
+      padding: 16px 24px;
+      font-size: 15px;
+    }
+
+    .metrics-table td:first-child {
+      color: var(--muted);
+      font-weight: 500;
+      width: 48%;
+    }
+
+    .metrics-table td:last-child {
+      font-weight: 700;
+      color: var(--ink);
+      text-align: right;
+    }
+
+    .metric-icon {
+      margin-right: 8px;
+    }
+
+    .unit-tag {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-left: 4px;
+    }
+
+    /* ACTIONS */
+    .actions-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .btn-back {
+      flex: 1;
+      min-width: 140px;
+      display: block;
+      text-align: center;
+      padding: 13px;
+      background: var(--ink);
+      color: #fff;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .btn-back:hover { background: #2D2D4E; }
+
+    .btn-add {
+      flex: 1;
+      min-width: 140px;
+      display: block;
+      text-align: center;
+      padding: 13px;
+      background: var(--mint);
+      color: #fff;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .btn-add:hover { background: #05C090; }
+
+    @media (max-width: 500px) {
+      .scores-grid { grid-template-columns: 1fr; }
+      .nav-links a:not(.active):not(.logout) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="nav-brand" href="/dashboard">
+      <div class="nav-icon">🌤</div>
+      <span>DailyPulse</span>
+    </a>
+    <div class="nav-links">
+      <a href="/dashboard" class="active">Dashboard</a>
+      <a href="/add-activity">+ Add</a>
+      <a href="/logout" class="logout">Logout</a>
+    </div>
+  </nav>
+
+  <main>
+    <a href="/dashboard" class="back-link">← Back to Dashboard</a>
+
+    <div class="page-header">
+      <h1>Activity Detail</h1>
+      <span class="date-badge">📅 {{ activity.activity_date }}</span>
+    </div>
+
+    <!-- Score Summary -->
+    <div class="scores-grid">
+      <div class="score-card stress">
+        <div class="emoji">😤</div>
+        <div class="score-val">{{ activity.stress_score }}</div>
+        <div class="score-lbl">Stress Score</div>
+      </div>
+      <div class="score-card productivity">
+        <div class="emoji">⚡</div>
+        <div class="score-val">{{ activity.productivity_score }}</div>
+        <div class="score-lbl">Productivity Score</div>
+      </div>
+    </div>
+
+    <!-- Detailed Metrics -->
+    <div class="detail-card">
+      <div class="detail-card-header">Daily Breakdown</div>
+      <table class="metrics-table">
+        <tr>
+          <td><span class="metric-icon">📚</span>Study Hours</td>
+          <td>{{ activity.study_hours }}<span class="unit-tag">hrs</span></td>
+        </tr>
+        <tr>
+          <td><span class="metric-icon">💤</span>Sleep Hours</td>
+          <td>{{ activity.sleep_hours }}<span class="unit-tag">hrs</span></td>
+        </tr>
+        <tr>
+          <td><span class="metric-icon">📱</span>Screen Time</td>
+          <td>{{ activity.screen_time }}<span class="unit-tag">hrs</span></td>
+        </tr>
+        <tr>
+          <td><span class="metric-icon">🏃</span>Exercise</td>
+          <td>{{ activity.exercise_minutes }}<span class="unit-tag">min</span></td>
+        </tr>
+        <tr>
+          <td><span class="metric-icon">🤝</span>Social Hours</td>
+          <td>{{ activity.social_hours }}<span class="unit-tag">hrs</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="actions-row">
+      <a href="/dashboard" class="btn-back">← Back to Dashboard</a>
+      <a href="/add-activity" class="btn-add">＋ Log Another Day</a>
+    </div>
+  </main>
+</body>
+</html>

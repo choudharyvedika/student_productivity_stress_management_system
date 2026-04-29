@@ -1,0 +1,10 @@
+<h2>Dashboard</h2>
+
+<a href="/add-activity">Add</a>
+<a href="/view-activity">View</a>
+
+{% for activity in activities %}
+    <p>{{ activity.activity_date }}</p>
+    <p><strong>Stress:</strong> {{ activity.stress_score }}</p>
+<p><strong>Productivity:</strong> {{ activity.productivity_score }}</p>
+{% endfor %}

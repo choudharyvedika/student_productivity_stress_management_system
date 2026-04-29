@@ -1,0 +1,16 @@
+<h2>Your Activities</h2>
+
+{% if activities %}
+    {% for activity in activities %}
+        <div style="border:1px solid black; padding:10px; margin:10px;">
+            <p><strong>Date:</strong> {{ activity.activity_date }}</p>
+            <p><strong>Study Hours:</strong> {{ activity.study_hours }}</p>
+            <p><strong>Sleep Hours:</strong> {{ activity.sleep_hours }}</p>
+            <p><strong>Screen Time:</strong> {{ activity.screen_time }}</p>
+            <p><strong>Exercise Minutes:</strong> {{ activity.exercise_minutes }}</p>
+            <p><strong>Social Hours:</strong> {{ activity.social_hours }}</p>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No activities yet</p>
+{% endif %}

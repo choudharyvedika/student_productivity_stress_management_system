@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Add Activity – ActivityTrack</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  :root {
+    --sky:#e8f4fd; --blue:#3b9de1; --blue-dark:#2b80c4;
+    --green:#4cbb8a; --green-dark:#39a474; --orange:#f8a84b;
+    --white:#ffffff; --text:#1e3a52; --muted:#6a8fa8;
+    --border:#c9e2f5; --bg:#f2f9ff; --shadow:0 4px 20px rgba(59,157,225,0.1);
+  }
+  body { font-family:'Nunito',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  nav {
+    background:var(--white); border-bottom:2px solid var(--border);
+    padding:0 32px; display:flex; align-items:center; justify-content:space-between;
+    height:66px; position:sticky; top:0; z-index:100;
+    box-shadow:0 2px 16px rgba(59,157,225,0.08);
+  }
+  .nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .nav-logo-icon {
+    width:38px; height:38px; background:linear-gradient(135deg,var(--blue),var(--green));
+    border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px;
+  }
+  .nav-logo-text { font-size:18px; font-weight:800; color:var(--text); }
+  .nav-logo-text span { color:var(--blue); }
+  .nav-links { display:flex; align-items:center; gap:4px; }
+  .nav-links a { padding:8px 16px; border-radius:10px; text-decoration:none; font-size:14px; font-weight:700; color:var(--muted); transition:all .18s; }
+  .nav-links a:hover, .nav-links a.active { background:var(--sky); color:var(--blue); }
+  .avatar { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,#b3deff,#a8f0d2); display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--blue); font-size:15px; cursor:pointer; border:2px solid var(--border); }
+  main { max-width:780px; margin:0 auto; padding:36px 24px 60px; }
+  .page-header { margin-bottom:32px; display:flex; align-items:center; gap:16px; }
+  .back-btn { width:40px; height:40px; border-radius:11px; border:2px solid var(--border); background:var(--white); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--muted); font-size:18px; transition:all .18s; flex-shrink:0; }
+  .back-btn:hover { border-color:var(--blue); color:var(--blue); background:var(--sky); }
+  .page-header h1 { font-size:26px; font-weight:900; color:var(--text); }
+  .page-header p { color:var(--muted); font-size:14px; }
+  /* ACTIVITY TYPE PICKER */
+  .type-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-bottom:28px; }
+  .type-btn {
+    border:2px solid var(--border); border-radius:14px; background:var(--white);
+    padding:14px 8px; text-align:center; cursor:pointer; transition:all .18s; font-family:inherit;
+  }
+  .type-btn:hover { border-color:var(--blue); background:var(--sky); }
+  .type-btn.selected { border-color:var(--blue); background:#dbeeff; }
+  .type-btn .t-icon { font-size:24px; display:block; margin-bottom:6px; }
+  .type-btn .t-name { font-size:11.5px; font-weight:700; color:var(--text); }
+  /* FORM CARD */
+  .form-card { background:var(--white); border-radius:20px; box-shadow:var(--shadow); border:1.5px solid var(--border); overflow:hidden; }
+  .form-section { padding:28px 32px; border-bottom:1.5px solid var(--border); }
+  .form-section:last-of-type { border-bottom:none; }
+  .section-title { font-size:14px; font-weight:800; color:var(--blue); text-transform:uppercase; letter-spacing:.8px; margin-bottom:20px; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .field { margin-bottom:18px; }
+  .field:last-child { margin-bottom:0; }
+  label { display:block; font-size:13px; font-weight:700; color:var(--text); margin-bottom:7px; letter-spacing:.3px; }
+  input[type="text"], input[type="number"], input[type="date"], input[type="time"], select, textarea {
+    width:100%; padding:12px 15px; border:2px solid var(--border);
+    border-radius:12px; font-family:inherit; font-size:15px; color:var(--text);
+    background:var(--sky); outline:none; transition:border .2s,box-shadow .2s; -webkit-appearance:none;
+  }
+  textarea { resize:vertical; min-height:90px; }
+  select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236a8fa8' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; cursor:pointer; }
+  input:focus, select:focus, textarea:focus { border-color:var(--blue); box-shadow:0 0 0 4px rgba(59,157,225,0.13); background:#fff; }
+  /* INTENSITY */
+  .intensity-row { display:flex; gap:10px; flex-wrap:wrap; }
+  .int-btn {
+    padding:10px 18px; border-radius:10px; border:2px solid var(--border);
+    background:var(--white); font-family:inherit; font-size:13.5px; font-weight:700;
+    color:var(--muted); cursor:pointer; transition:all .18s;
+  }
+  .int-btn:hover { border-color:var(--blue); color:var(--blue); }
+  .int-btn.selected { border-color:var(--blue); background:var(--sky); color:var(--blue); }
+  /* LIVE CALC */
+  .calc-bar {
+    background:linear-gradient(135deg,#dbeeff,#d4f4e6);
+    border-radius:14px; padding:18px 22px;
+    display:flex; align-items:center; justify-content:space-around;
+    margin-top:24px; flex-wrap:wrap; gap:12px;
+    border:1.5px solid var(--border);
+  }
+  .calc-item { text-align:center; }
+  .calc-val { font-size:22px; font-weight:900; color:var(--blue); }
+  .calc-label { font-size:12px; color:var(--muted); font-weight:600; margin-top:2px; }
+  /* FOOTER BTNS */
+  .form-footer { padding:24px 32px; display:flex; gap:14px; border-top:1.5px solid var(--border); }
+  .btn-primary {
+    flex:1; padding:14px; border:none; border-radius:12px; cursor:pointer;
+    font-family:inherit; font-size:16px; font-weight:800;
+    background:linear-gradient(135deg,var(--blue),var(--green));
+    color:#fff; box-shadow:0 4px 16px rgba(59,157,225,0.28);
+    transition:transform .15s,box-shadow .15s;
+  }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(59,157,225,0.38); }
+  .btn-secondary {
+    padding:14px 24px; border:2px solid var(--border); border-radius:12px; cursor:pointer;
+    font-family:inherit; font-size:15px; font-weight:700; color:var(--muted);
+    background:var(--white); transition:all .18s;
+  }
+  .btn-secondary:hover { border-color:var(--blue); color:var(--blue); }
+  /* SUCCESS TOAST */
+  .toast {
+    position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(100px);
+    background:linear-gradient(135deg,var(--green),var(--blue)); color:#fff;
+    padding:14px 28px; border-radius:14px; font-weight:700; font-size:15px;
+    box-shadow:0 8px 28px rgba(59,157,225,0.3); transition:transform .4s cubic-bezier(.22,.68,0,1.2); z-index:999;
+  }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+  @media(max-width:700px) { .form-row{grid-template-columns:1fr;} .type-grid{grid-template-columns:repeat(3,1fr);} }
+  @media(max-width:480px) { .form-section{padding:20px 16px;} .form-footer{padding:18px 16px; flex-direction:column;} nav{padding:0 16px;} .nav-links{display:none;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="dashboard.html" class="nav-logo">
+    <div class="nav-logo-icon">🏃</div>
+    <div class="nav-logo-text">Activity<span>Track</span></div>
+  </a>
+  <div class="nav-links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="view-activity.html">Activities</a>
+    <a href="#">Progress</a>
+  </div>
+  <div class="avatar">AL</div>
+</nav>
+
+<main>
+  <div class="page-header">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <div>
+      <h1>Log New Activity</h1>
+      <p>Record your workout or physical activity</p>
+    </div>
+  </div>
+
+  <!-- TYPE PICKER -->
+  <div class="type-grid" id="typeGrid">
+    <button class="type-btn selected" onclick="selectType(this)"><span class="t-icon">🏃</span><span class="t-name">Running</span></button>
+    <button class="type-btn" onclick="selectType(this)"><span class="t-icon">🚴</span><span class="t-name">Cycling</span></button>
+    <button class="type-btn" onclick="selectType(this)"><span class="t-icon">🏊</span><span class="t-name">Swimming</span></button>
+    <button class="type-btn" onclick="selectType(this)"><span class="t-icon">🏋️</span><span class="t-name">Weights</span></button>
+    <button class="type-btn" onclick="selectType(this)"><span class="t-icon">🧘</span><span class="t-name">Yoga</span></button>
+    <button class="type-btn" onclick="selectType(this)"><span class="t-icon">⚽</span><span class="t-name">Sports</span></button>
+  </div>
+
+  <div class="form-card">
+    <!-- BASICS -->
+    <div class="form-section">
+      <div class="section-title">Activity Details</div>
+      <div class="field">
+        <label>Activity Name</label>
+        <input type="text" id="actName" placeholder="e.g. Morning Run in the Park" oninput="updateCalc()"/>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="actDate" value="2026-04-27"/>
+        </div>
+        <div class="field">
+          <label>Time</label>
+          <input type="time" id="actTime" value="07:30"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Duration (minutes)</label>
+          <input type="number" id="actDur" placeholder="45" min="1" max="600" oninput="updateCalc()"/>
+        </div>
+        <div class="field">
+          <label>Distance (km)</label>
+          <input type="number" id="actDist" placeholder="5.0" step="0.1" min="0" oninput="updateCalc()"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTENSITY -->
+    <div class="form-section">
+      <div class="section-title">Intensity & Feel</div>
+      <div class="field">
+        <label>Intensity Level</label>
+        <div class="intensity-row">
+          <button class="int-btn" onclick="selectInt(this,1)">😌 Easy</button>
+          <button class="int-btn selected" onclick="selectInt(this,2)">🙂 Moderate</button>
+          <button class="int-btn" onclick="selectInt(this,3)">😤 Hard</button>
+          <button class="int-btn" onclick="selectInt(this,4)">🔥 Max</button>
+        </div>
+      </div>
+      <div class="form-row" style="margin-top:18px;">
+        <div class="field">
+          <label>Avg Heart Rate (bpm)</label>
+          <input type="number" id="actHr" placeholder="145" min="40" max="220" oninput="updateCalc()"/>
+        </div>
+        <div class="field">
+          <label>Location / Venue</label>
+          <select>
+            <option>Outdoors</option>
+            <option>Gym</option>
+            <option>Home</option>
+            <option>Pool</option>
+            <option>Track</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="form-section">
+      <div class="section-title">Notes & Media</div>
+      <div class="field">
+        <label>Notes (optional)</label>
+        <textarea placeholder="How did it go? Any personal bests, feelings, or highlights…"></textarea>
+      </div>
+      <div class="field">
+        <label>Mood After Workout</label>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <button class="int-btn" onclick="toggleMood(this)" style="font-size:20px;padding:8px 14px;">😴</button>
+          <button class="int-btn" onclick="toggleMood(this)" style="font-size:20px;padding:8px 14px;">😐</button>
+          <button class="int-btn selected" onclick="toggleMood(this)" style="font-size:20px;padding:8px 14px;">😊</button>
+          <button class="int-btn" onclick="toggleMood(this)" style="font-size:20px;padding:8px 14px;">🤩</button>
+          <button class="int-btn" onclick="toggleMood(this)" style="font-size:20px;padding:8px 14px;">😵</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE CALC -->
+    <div class="form-section" style="padding-top:20px;padding-bottom:20px;">
+      <div class="calc-bar">
+        <div class="calc-item">
+          <div class="calc-val" id="calcCal">— kcal</div>
+          <div class="calc-label">Est. Calories</div>
+        </div>
+        <div class="calc-item">
+          <div class="calc-val" id="calcPace">— /km</div>
+          <div class="calc-label">Avg Pace</div>
+        </div>
+        <div class="calc-item">
+          <div class="calc-val" id="calcSpeed">— km/h</div>
+          <div class="calc-label">Avg Speed</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="form-footer">
+      <button class="btn-secondary" onclick="window.location='dashboard.html'">Cancel</button>
+      <button class="btn-primary" onclick="saveActivity()">Save Activity ✓</button>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast">✅ Activity saved successfully!</div>
+
+<script>
+  let intensity = 2;
+  function selectType(el) {
+    document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+  function selectInt(el, level) {
+    document.querySelectorAll('.int-btn').forEach(b=>b.classList.remove('selected'));
+    el.classList.add('selected'); intensity = level;
+    updateCalc();
+  }
+  function toggleMood(el) {
+    document.querySelectorAll('.int-btn[style*="font-size:20px"]').forEach(b=>b.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+  function updateCalc() {
+    const dur = parseFloat(document.getElementById('actDur').value)||0;
+    const dist = parseFloat(document.getElementById('actDist').value)||0;
+    const mets = [0,5,7,10,14];
+    const cal = dur > 0 ? Math.round(dur * mets[intensity] * 0.9 ) : 0;
+    document.getElementById('calcCal').textContent = cal > 0 ? cal+' kcal' : '— kcal';
+    if(dur > 0 && dist > 0) {
+      const paceMin = Math.floor(dur/dist);
+      const paceSec = Math.round((dur/dist - paceMin)*60);
+      document.getElementById('calcPace').textContent = paceMin+':'+(paceSec<10?'0':'')+paceSec+' /km';
+      document.getElementById('calcSpeed').textContent = (dist/(dur/60)).toFixed(1)+' km/h';
+    } else {
+      document.getElementById('calcPace').textContent = '— /km';
+      document.getElementById('calcSpeed').textContent = '— km/h';
+    }
+  }
+  function saveActivity() {
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(()=>{ toast.classList.remove('show'); setTimeout(()=>window.location='view-activity.html',300); }, 2000);
+  }
+</script>
+</body>
+</html>

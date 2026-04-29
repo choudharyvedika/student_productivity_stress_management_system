@@ -1,0 +1,12 @@
+<h2>Activity Details</h2>
+
+{% if activity %}
+    <p>Date: {{ activity.activity_date }}</p>
+    <p>Study: {{ activity.study_hours }}</p>
+    <p>Sleep: {{ activity.sleep_hours }}</p>
+    <p>Screen: {{ activity.screen_time }}</p>
+    <p>Exercise: {{ activity.exercise_minutes }}</p>
+    <p>Social: {{ activity.social_hours }}</p>
+{% else %}
+    <p>Not found</p>
+{% endif %}
