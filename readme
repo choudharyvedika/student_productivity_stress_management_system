@@ -1,1 +1,108 @@
-requirements:
+# DailyPulse — Student Stress & Productivity Tracker
+
+DailyPulse is a small Flask web app for students to log daily habits (study, sleep, screen time, exercise, social time) and get a rule-based **stress score** and **productivity score** for each entry.
+
+## Features
+
+- **Auth** — register and log in with email/password (SHA‑256 hashed passwords, session-based login)
+- **Dashboard** — lists all logged activities with their predicted stress/productivity scores
+- **Add Activity** — form to log a day's study/sleep/screen/exercise/social hours
+- **View Activities** — full activity history list
+- **Activity Detail** — single-entry breakdown page
+- **Metric prediction** — a simple rule-based function scores stress and productivity from the logged hours
+
+## Tech Stack
+
+- Python / Flask (Blueprints)
+- MySQL (via `mysql.connector`)
+- Jinja2 templates, plain CSS (no framework)
+
+## Expected Project Structure
+
+The route files import from `routes.*` and `models.db`, so the project is expected to be organized as:
+
+```
+project/
+├── app.py
+├── config.py
+├── models/
+│   └── db.py
+├── routes/
+│   ├── auth_routes.py
+│   └── activity_routes.py
+└── templates/
+    ├── login.html
+    ├── register.html
+    ├── dashboard.html
+    ├── add_activity.html
+    ├── view_activity.html
+    └── activity_detail.html
+```
+
+> **Note:** The uploaded files are flat (no `routes/`/`models/` folders), so they'll need to be moved into that layout for `app.py`'s imports to resolve. See [Known Issues](#known-issues) below.
+
+## Database Schema (inferred from queries)
+
+The app expects a MySQL database (default name `StudentStressProductivityDB`) with at least these tables:
+
+| Table | Key columns (inferred) |
+|---|---|
+| `STUDENT` | `student_id` (PK), `first_name`, `last_name`, `email`, `enrollment_date` |
+| `USER_AUTH` | `user_id` (PK), `email`, `password` (SHA‑256 hash), `student_id` (FK → STUDENT) |
+| `ACTIVITY_LOG` | `activity_id` (PK), `student_id` (FK), `activity_date`, `study_hours`, `sleep_hours`, `screen_time`, `exercise_minutes`, `social_hours` |
+| `PREDICTED_METRICS` | `activity_id` (FK → ACTIVITY_LOG), `stress_score`, `productivity_score`, `prediction_timestamp` |
+
+## Scoring Logic
+
+`calculate_metrics()` starts both scores at 5 (out of 10) and adjusts:
+
+**Stress** increases if:
+- sleep < 6 hrs (+2)
+- screen time > 5 hrs (+1)
+- social time > 4 hrs (+1)
+
+**Productivity** increases if:
+- study > 4 hrs (+2)
+- exercise > 20 min (+1)
+- sleep ≥ 7 hrs (+1)
+
+Both scores are clamped to a 1–10 range.
+
+## Routes
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/` | Login page |
+| POST | `/login` | Authenticate user, start session |
+| GET/POST | `/register` | Create a new student + auth account |
+| GET | `/dashboard` | List activities with predicted scores |
+| GET/POST | `/add-activity` | Show form (GET) / log activity + predict scores (POST) |
+| GET | `/view-activity` | List all activities (no scores) |
+| GET | `/activity/<int:activity_id>` | Single activity detail |
+
+## Setup
+
+1. Create the MySQL database and tables described above.
+2. Update credentials in `config.py` / `models/db.py` (currently hardcoded to `root`/`password`).
+3. Install dependencies:
+   ```bash
+   pip install flask mysql-connector-python
+   ```
+4. Run the app:
+   ```bash
+   python app.py
+   ```
+5. Visit `http://localhost:5000/`.
+
+## Known Issues
+
+- **No `requirements.txt`** — add one for `flask` and `mysql-connector-python`.
+- **Folder mismatch** — `app.py` imports from `routes.*` and `models.db`, but the uploaded files are flat; move them into `routes/` and `models/` packages (with `__init__.py`).
+- **Hardcoded secrets/credentials** — `app.secret_key` and DB password are hardcoded in source; move to environment variables.
+- **Duplicate/conflicting templates** — two different `add_activity.html`/`dashboard.html`/`login.html`/`register.html`/`view_activity.html` were included: fully styled "DailyPulse" versions and bare-bones unstyled versions with the same filenames. Only one set should be kept in `templates/`.
+- **Unrelated template** — `add-activity.html` (hyphenated) is a separate "ActivityTrack" mockup with its own JS calorie/pace calculator and static links (`dashboard.html`, `view-activity.html`) rather than Flask routes/Jinja — it doesn't match the Flask app's data model and isn't wired to any route.
+- **No `/logout` route** — templates link to `/logout` but it isn't implemented in `auth_routes.py`.
+- **Leftover debug `print()` statements** in `add_activity()`.
+- **No input validation** — form fields are cast with `int()` directly; non-numeric input will crash the request.
+- **Password hashing** — SHA‑256 without salt; consider `werkzeug.security` (`generate_password_hash`/`check_password_hash`) instead.
+- **`.pyc` file included** — `db_cpython-314.pyc` is a compiled bytecode artifact, not source; safe to remove from the repo.
